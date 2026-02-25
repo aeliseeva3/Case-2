@@ -1,11 +1,10 @@
-text = '4000 0012 3456 7899 fg5t 4000-0012-3456-7890'
+text = '4000 0012 3456 7899 fg5t 4000-0012-3456-7890-1111'
 import re
 
 
-def luna_check(card):
+def luna_check(number):
     total = 0
-    clean_card = re.sub(r'\D', '', card)
-    reverse_card = clean_card[::-1]
+    reverse_card = number[::-1]
     for index in range(len(reverse_card)):
         digit = int(reverse_card[index])
         if index % 2 == 1:
@@ -17,17 +16,21 @@ def luna_check(card):
 
 def find_and_validate_credit_cards(text):
     reg = r'[0-9]{4}[- ][0-9]{4}[- ][0-9]{4}[- ][0-9]{4}'
+    reg1 = rf'(?=({reg}))'
     result = {'valid': [], 'invalid': []}
-    credit_cards = re.findall(reg, text)
+    credit_cards = re.findall(reg1, text)
 
     for card in credit_cards:
-        if luna_check(card):
+        clean_card = re.sub(r'\D', '', card)
+        if luna_check(clean_card):
             result['valid'].append(card)
         else:
             result['invalid'].append(card)
     return result
 
-find_and_validate_credit_cards(text)
+
+my_result = find_and_validate_credit_cards(text)
+print(my_result['valid'])
 
 
 #find_and_validate_credit_cards(text)
