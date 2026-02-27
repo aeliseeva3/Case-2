@@ -1,4 +1,4 @@
-text = '4000 0012 3456 7899 fg5t 4000-0012-3456-7890-1111'
+text = '4000 0012 3456 7899 fg5t 4000-0012-3456-7890-1111 192.168.1.1 10.0.0.255'
 import re
 
 
@@ -33,4 +33,23 @@ my_result = find_and_validate_credit_cards(text)
 print(my_result['valid'])
 
 
+
+
+
+
+
+
+
+
+
+
+import re
+text = "255.195.20.1kcxjnjv32.248.0.0  012.654.12.36"
+
+def find_system_info(text):
+    num = r'(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])'
+    reg = rf'({num}\.)({num}\.)({num}\.)({num})'
+    ip = [x.group() for x in re.finditer(reg, text)]
+    return ip
+print(find_system_info(text))
 #find_and_validate_credit_cards(text)
