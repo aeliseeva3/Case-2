@@ -1,7 +1,8 @@
 text = '4000 0012 3456 7899 fg5t 255.195.20.1kcxjnjv32.248.0.0  012.654.12.36 4000-0012-3456-7890-1111 192.168.1.1 10.0.0.255 dciuurti56_-iftd)'
 
 import re
-
+import base64
+import codecs
 
 def luna_check(number):
     total = 0
@@ -29,12 +30,8 @@ def find_and_validate_credit_cards(text):
             result['invalid'].append(card)
     return result
 
-
 my_result = find_and_validate_credit_cards(text)
 print(my_result['valid'])
-
-
-
 
 
 
@@ -45,9 +42,6 @@ def find_system_info(text):
     ip = [x.group() for x in re.finditer(reg, text)]
     return ip
 print(find_system_info(text))
-
-
-
 
 
 def find_secrets(text):
@@ -65,3 +59,47 @@ def find_secrets(text):
             found_secrets.extend(match)
     return list(found_secrets)
 print(find_secrets(text))
+
+
+def decode_messages(text):
+    results = {'base64': [], 'hex': [], 'rot13': []}
+    reg = r'[A-Za-z0-9+/]{10,}={0,2}'
+    found_base64 = re.findall(reg, text)
+    for encoded in found_base64:
+        try:
+            decoded_bytes = base64.b64decode(encoded)
+            decoded_text = decoded_bytes.decode('utf-8')
+            results['base64'].append(decoded_text)
+        except:
+            pass
+    reg_hex_1 = r'0x[A-Fa-f0-9]{2,}'
+    reg_hex_2 = r'(?:\\x[A-Fa-f0-9]{2})+'
+    found_hex_1 = re.findall(reg_hex_1, text)
+    found_hex_2 = re.findall(reg_hex_2, text)
+    found_hex = found_hex_1 + found_hex_2
+    for hex_str in found_hex:
+        try:
+            if hex_str.startswith('0x'):
+                clean = hex_str[2:]
+            else:
+                clean = hex_str.replace('\\x', '')
+            decoded_bytes = bytes.fromhex(clean)
+            decoded_text = decoded_bytes.decode('utf-8')
+            results['hex'].append(decoded_text)
+        except:
+            pass
+    reg_rot = r'\b[A-Za-z]{4,}\b'
+    found_rot = re.findall(reg_rot, text)
+    for word in found_rot:
+        try:
+            decoded = codecs.encode(word, 'rot_13')
+            common_words = ['the', 'and', 'for', 'you', 'password', 'admin', 'user', 'secret', 'hello', 'world', 'this',
+                            'that', 'with', 'from', 'have']
+            if any(common in decoded.lower() for common in common_words):
+                results['rot13'].append(decoded)
+        except:
+            pass
+    return results
+
+result = decode_messages(text)
+print(result)
