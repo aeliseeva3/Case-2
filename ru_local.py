@@ -1,4 +1,5 @@
-text = '4000 0012 3456 7899 fg5t 4000-0012-3456-7890-1111 192.168.1.1 10.0.0.255'
+text = '4000 0012 3456 7899 fg5t 255.195.20.1kcxjnjv32.248.0.0  012.654.12.36 4000-0012-3456-7890-1111 192.168.1.1 10.0.0.255 dciuurti56_-iftd)'
+
 import re
 
 
@@ -38,18 +39,29 @@ print(my_result['valid'])
 
 
 
-
-
-
-
-
-import re
-text = "255.195.20.1kcxjnjv32.248.0.0  012.654.12.36"
-
 def find_system_info(text):
     num = r'(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])'
     reg = rf'({num}\.)({num}\.)({num}\.)({num})'
     ip = [x.group() for x in re.finditer(reg, text)]
     return ip
 print(find_system_info(text))
-#find_and_validate_credit_cards(text)
+
+
+
+
+
+def find_secrets(text):
+    patterns = {
+        'Stripe Secret Key': r'sk_live_[0-9a-zA-Z]{24}',
+        'Stripe Publishable Key': r'pk_test_[0-9a-zA-Z]{24}',
+        'Generic API Key': r'(?i)(?:api_key|access_token|password)'
+                                  r'[\s:=]+["\']?([a-zA-Z0-9!@#$%^&*()_+]'
+                                  r'{8,})["\']?'
+               }
+    found_secrets = []
+    for name, pattern in patterns.items():
+        match = re.findall(pattern, text)
+        if match:
+            found_secrets.extend(match)
+    return list(found_secrets)
+print(find_secrets(text))
