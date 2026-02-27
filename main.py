@@ -103,3 +103,57 @@ def decode_messages(text):
 
 result = decode_messages(text)
 print(result)
+def analyze_logs_optimal(text):
+    results = {
+        'sql_injections': [],
+        'xss_attempts': [],
+        'suspicious_user_agents': [],
+        'failed_logins': []
+    }
+
+    sql_patterns = [
+        "' OR '1'='1", "' OR 1=1", "' OR ''='",
+        " UNION SELECT ", "'; DROP TABLE ", "'; DELETE FROM ",
+        "1=1--", "admin'--", "' OR 'x'='x", "' AND 1=1"
+    ]
+
+    xss_patterns = [
+        "<script>", "alert(", "onerror=", "onload=",
+        "onclick=", "javascript:", "<img src=", "<svg"
+    ]
+
+    suspicious_agents = [
+        'sqlmap', 'nmap', 'nikto', 'burpsuite',
+        'curl', 'wget', 'python-requests', 'go-http-client'
+    ]
+
+    failed_patterns = ['401', '403', 'failed login', 'invalid password', 'access denied']
+
+    lines = text.split('\n')
+    for line_num, line in enumerate(lines, 1):
+        line_lower = line.lower()
+
+        for pattern in sql_patterns:
+            if pattern.lower() in line_lower:
+                results['sql_injections'].append(f"Строка {line_num}: {line}")
+                break
+
+        for pattern in xss_patterns:
+            if pattern.lower() in line_lower:
+                results['xss_attempts'].append(f"Строка {line_num}: {line}")
+                break
+
+        for agent in suspicious_agents:
+            if agent in line_lower:
+                results['suspicious_user_agents'].append(f"Строка {line_num}: {line}")
+                break
+
+        for pattern in failed_patterns:
+            if pattern in line_lower:
+                results['failed_logins'].append(f"Строка {line_num}: {line}")
+                break
+
+    return results
+results = analyze_logs_optimal(text)
+
+print(results)
