@@ -1,6 +1,7 @@
 from locale import windows_locale
 
-text = '4000 0012 3456 7899 fg5t 255.195.20.1kcxjnjv32.248.0.0  012.654.12.36 4000-0012-3456-7890-1111 192.168.1.1 10.0.0.255 dciuurti56_-iftd) support@example.com info@company.org report.docx image.jpg C:\Windows\system32\drives\etc\hosts'
+text = '4000 0012 3456 7899 fg5t 255.195.20.1 kcxjnjv 32.248.0.0  32.248.0.0  012.654.12.36 4000-0012-3456-7890-1111 192.168.1.1 10.0.0.255 dciuurti56_-iftd)'
+012.654.12.36 4000-0012-3456-7890-1111 192.168.1.1 10.0.0.255 dciuurti56_-iftd) support@example.com info@company.org report.docx image.jpg C:\Windows\system32\drives\etc\hosts'
 
 import re
 import base64
@@ -75,8 +76,16 @@ results = find_system_info(text)
 print(results)
 
 
+def find_password(text):
+    passwords =  r'(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}'
+    potential_passwords = re.findall(passwords, text)
+    found_passwords = []
 
-def find_secrets(text):
+    for password in potential_passwords:
+        found_passwords.append(password)
+    return found_passwords
+
+def find_key(text):
     patterns = {
         'Stripe Secret Key': r'sk_live_[0-9a-zA-Z]{24}',
         'Stripe Publishable Key': r'pk_test_[0-9a-zA-Z]{24}',
@@ -84,12 +93,22 @@ def find_secrets(text):
                                   r'[\s:=]+["\']?([a-zA-Z0-9!@#$%^&*()_+]'
                                   r'{8,})["\']?'
                }
-    found_secrets = []
+    found_key = []
+
     for name, pattern in patterns.items():
         match = re.findall(pattern, text)
         if match:
-            found_secrets.extend(match)
-    return list(found_secrets)
+            found_key.extend(match)
+
+    return list(found_key)
+
+
+def find_secrets(text):
+    secrets=[]
+    secrets.extend(find_key(text))
+    secrets.extend(find_password(text))
+    return secrets
+
 print(find_secrets(text))
 
 
