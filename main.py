@@ -1,4 +1,6 @@
-text = '4000 0012 3456 7899 fg5t 255.195.20.1kcxjnjv32.248.0.0  012.654.12.36 4000-0012-3456-7890-1111 192.168.1.1 10.0.0.255 dciuurti56_-iftd)'
+from locale import windows_locale
+
+text = '4000 0012 3456 7899 fg5t 255.195.20.1kcxjnjv32.248.0.0  012.654.12.36 4000-0012-3456-7890-1111 192.168.1.1 10.0.0.255 dciuurti56_-iftd) support@example.com info@company.org report.docx image.jpg C:\Windows\system32\drives\etc\hosts'
 
 import re
 import base64
@@ -35,13 +37,43 @@ print(my_result['valid'])
 
 
 
-
 def find_system_info(text):
+    results = {
+        "ips": [],
+        "files": [],
+        "emails": []
+    }
     num = r'(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])'
-    reg = rf'({num}\.)({num}\.)({num}\.)({num})'
-    ip = [x.group() for x in re.finditer(reg, text)]
-    return ip
-print(find_system_info(text))
+    ip_pattern = rf'(?=({num}\.{num}\.{num}\.{num}))'
+    ips = [x.group(1) for x in re.finditer(ip_pattern, text)]
+    results["ips"] = ips
+
+    extensions = ['txt', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'png', 'gif',
+              'exe', 'msi', 'ini', 'cfg', 'conf', 'log', 'tmp', 'temp',
+              'zip', 'rar', '7z', 'tar', 'gz', 'py', 'js', 'html', 'css',
+              'dll', 'sys', 'drv', 'bat', 'cmd', 'ps1', 'vbs']
+
+    files_found = []
+
+    windows_pattern = r'[A-Za-z]:\\(?:[^\\\s]+\\)*[^\\\s]+'
+    windows_matches = re.findall(windows_pattern, text)
+    files_found.extend(windows_matches)
+
+    for ext in extensions:
+        pattern = rf'\b\S+\.{ext}\b'
+        matches = re.findall(pattern, text)
+        files_found.extend(matches)
+    results["files"] = files_found
+
+    email_pattern = r'\b\S+@\S+\.\S+\b'
+    emails = re.findall(email_pattern, text)
+    results["emails"] = emails
+
+    return results
+
+results = find_system_info(text)
+print(results)
+
 
 
 def find_secrets(text):
