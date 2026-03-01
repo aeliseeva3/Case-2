@@ -1,7 +1,6 @@
 from locale import windows_locale
 
-text = '4000 0012 3456 7899 fg5t 255.195.20.1 kcxjnjv 32.248.0.0   01/01/1849 07.11.2011 32.248.0.0  012.654.12.36 4000-0012-3456-7890-1111 192.168.1.1 10.0.0.255 dciuurti56_-iftd)'
-012.654.12.36 4000-0012-3456-7890-1111 192.168.1.1 10.0.0.255 dciuurti56_-iftd) support@example.com info@company.org report.docx image.jpg C:\Windows\system32\drives\etc\hosts'
+text = '4000 0012 3456 7899 fg5t 255.195.20.1 kcxjnjv 32.248.0.0   01/01/1849 07.11.2011 32.248.0.0  012.654.12.36 4000-0012-3456-7890-1111 192.168.1.1 10.0.0.255 dciuurti56_-iftd)012.654.12.36 4000-0012-3456-7890-1111 192.168.1.1 10.0.0.255 dciuurti56_-iftd) support@example.com info@company.org report.docx image.jpg C:\Windows\system32\drives\etc\hosts'
 
 from datetime import datetime
 import re
@@ -174,6 +173,10 @@ def analyze_logs_optimal(text):
             if pattern in line_lower:
                 results['failed_logins'].append(f"Строка {line_num}: {line}")
                 break
+    return results
+results = analyze_logs_optimal(text)
+
+print(results)
 
 
 
@@ -314,7 +317,4 @@ def normalize_and_validate(text):
 print(normalize_and_validate(text))
 
 
-    return results
-results = analyze_logs_optimal(text)
-
-print(results)
+    
