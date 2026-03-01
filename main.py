@@ -1,41 +1,12 @@
 from locale import windows_locale
 
-text = '4000 0012 3456 7899 fg5t 255.195.20.1 kcxjnjv 32.248.0.0  32.248.0.0  012.654.12.36 4000-0012-3456-7890-1111 192.168.1.1 10.0.0.255 dciuurti56_-iftd)'
+text = '4000 0012 3456 7899 fg5t 255.195.20.1 kcxjnjv 32.248.0.0   01/01/1849 07.11.2011 32.248.0.0  012.654.12.36 4000-0012-3456-7890-1111 192.168.1.1 10.0.0.255 dciuurti56_-iftd)'
 012.654.12.36 4000-0012-3456-7890-1111 192.168.1.1 10.0.0.255 dciuurti56_-iftd) support@example.com info@company.org report.docx image.jpg C:\Windows\system32\drives\etc\hosts'
 
+from datetime import datetime
 import re
 import base64
 import codecs
-
-def luna_check(number):
-    total = 0
-    reverse_card = number[::-1]
-    for index in range(len(reverse_card)):
-        digit = int(reverse_card[index])
-        if index % 2 == 1:
-            digit *= 2
-            if digit > 9:
-                digit -= 9
-        total += digit
-    return total % 10 == 0
-
-def find_and_validate_credit_cards(text):
-    reg = r'[0-9]{4}[- ][0-9]{4}[- ][0-9]{4}[- ][0-9]{4}'
-    reg1 = rf'(?=({reg}))'
-    result = {'valid': [], 'invalid': []}
-    credit_cards = re.findall(reg1, text)
-
-    for card in credit_cards:
-        clean_card = re.sub(r'\D', '', card)
-        if luna_check(clean_card):
-            result['valid'].append(card)
-        else:
-            result['invalid'].append(card)
-    return result
-
-my_result = find_and_validate_credit_cards(text)
-print(my_result['valid'])
-
 
 
 def find_system_info(text):
@@ -203,6 +174,145 @@ def analyze_logs_optimal(text):
             if pattern in line_lower:
                 results['failed_logins'].append(f"Строка {line_num}: {line}")
                 break
+
+
+
+
+
+def validate_phones(text):
+    phone_patterns = [r'\+7[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}', # +7 XXX XXX XX XX
+                        r'8[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}', # 8 XXX XXX XX XX
+                        r'\d{3}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}', # XXX XXX XX XX
+    ]
+    found_phones = {'valid': [], 'invalid': []}
+
+    for pattern in phone_patterns:
+        found = re.findall(pattern, text)
+
+        for phone in found:
+            normalized = re.sub(r'\D', '', phone)
+            if len(normalized) == 10:
+                normalized = '7' + normalized
+            elif len(normalized) == 11 and normalized.startswith('8'):
+                normalized = '7' + normalized[1:]
+
+            if len(normalized) == 11 and normalized.startswith('7'):
+                found_phones['valid'].append(normalized)
+            else:
+                found_phones['invalid'].append(phone)
+
+    return found_phones
+
+
+
+def luna_check(number):
+    total = 0
+    reverse_card = number[::-1]
+    for index in range(len(reverse_card)):
+        digit = int(reverse_card[index])
+        if index % 2 == 1:
+            digit *= 2
+            if digit > 9:
+                digit -= 9
+        total += digit
+    return total % 10 == 0
+
+def find_credit_cards(text):
+    reg = r'[0-9]{4}[- ][0-9]{4}[- ][0-9]{4}[- ][0-9]{4}'
+    reg1 = rf'(?=({reg}))'
+    result = {'valid': [], 'invalid': []}
+    credit_cards = re.findall(reg1, text)
+
+    for card in credit_cards:
+        clean_card = re.sub(r'\D', '', card)
+        if luna_check(clean_card):
+            result['valid'].append(card)
+        else:
+            result['invalid'].append(card)
+    return result
+
+
+
+def validate_dates(text):
+    date_patterns =  [
+        (r'\b(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.(\d{4})\b', "%d.%m.%Y"),
+        (r'\b(\d{4})/(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])\b', "%Y/%m/%d"),
+        (r'\b(0[1-9]|[12][0-9]|3[01])-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-(\d{4})\b', "%d-%b-%Y")
+    ]
+    result = {'valid': [], 'invalid': []}
+
+    for pattern, date_format in date_patterns:
+        found = re.findall(pattern, text)
+        for date_tuple in found:
+            if date_format == "%Y/%m/%d":
+                date_str = f"{date_tuple[0]}/{date_tuple[1]}/{date_tuple[2]}"
+            elif date_format == "%d-%b-%Y":
+                date_str = f"{date_tuple[0]}-{date_tuple[1]}-{date_tuple[2]}"
+            else:
+                date_str = f"{date_tuple[0]}.{date_tuple[1]}.{date_tuple[2]}"
+
+            try:
+                dt_obj = datetime.strptime(date_str, date_format)
+                result['valid'].append(dt_obj.strftime("%Y-%m-%d"))
+            except ValueError:
+                result['invalid'].append(date_str)
+
+    return result
+
+def validate_inn(inn):
+    if len(inn) == 10:
+        coefficients = [2, 4, 10, 3, 5, 9, 4, 6, 8]
+        checksum = sum(int(inn[i]) * coefficients[i] for i in range(9))
+        return (checksum % 11 % 10) == int(inn[9])
+
+    elif len(inn) == 12:
+        coefficients_1 = [7, 2, 4, 10, 3, 5, 9, 4, 6, 8]
+        coefficients_2 = [3, 7, 2, 4, 10, 3, 5, 9, 4, 6, 8]
+
+        checksum1 = sum(int(inn[i]) * coefficients_1[i] for i in range(10))
+        checksum2 = sum(int(inn[i]) * coefficients_2[i] for i in range(11))
+
+        return ((checksum1 % 11 % 10) == int(inn[10]) and
+                (checksum2 % 11 % 10) == int(inn[11]))
+
+    return False
+
+
+def find_inn(text):
+    result = {'valid': [], 'invalid': []}
+    reg_inn = r'\b\d{10}\b|\b\d{12}\b'
+    found_inn = re.findall(reg_inn, text)
+
+    for inn in found_inn:
+        if validate_inn(inn):
+            result['valid'].append(inn)
+        else:
+            result['invalid'].append(inn)
+
+    return result
+
+
+def normalize_and_validate(text):
+    result = { 'phones': {'valid': [], 'invalid': []},'dates': {'valid': [], 'invalid': []},
+               'inn': {'valid': [], 'invalid': []}, 'cards': {'valid': [], 'invalid': []} }
+
+    phones_data = validate_phones(text)
+    result['phones'].update(phones_data)
+
+    dates_data = validate_dates(text)
+    result['dates'].update(dates_data)
+
+    inn_data = find_inn(text)
+    result['inn'].update(inn_data)
+
+    cards_data = find_credit_cards(text)
+    result['cards'].update(cards_data)
+
+    return result
+
+
+print(normalize_and_validate(text))
+
 
     return results
 results = analyze_logs_optimal(text)
