@@ -384,4 +384,28 @@ if __name__ == "__main__":
         print_report(report)
 
 
+def universal_save(report, filename="result3.txt"):
+    def extract(obj):
+        items = []
+        if isinstance(obj, dict):
+            for name, value in obj.items():
+                if name == 'invalid':
+                    continue
+                items.extend(extract(value))
+        elif isinstance(obj, list):
+            for i in obj:
+                if isinstance(i, (list, dict)):
+                    items.extend(extract(i))
+                else:
+                    val = str(i).strip()
+                    if val and val.lower() not in ['phones', 'dates', 'inn', 'cards']:
+                        items.append(val)
+        return items
+
+    all_data = extract(report)
+
+    with open("result3.txt", 'w', encoding='utf-8') as f:
+        for line in all_data:
+            f.write(f"{line}\n")
+
     
