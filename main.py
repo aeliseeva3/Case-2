@@ -9,6 +9,9 @@ import codecs
 
 
 def find_system_info(text):
+    '''
+    3 role. Find ips, files, emails.
+    '''
     results = {
         "ips": [],
         "files": [],
@@ -47,6 +50,9 @@ print(results)
 
 
 def find_password(text):
+    '''
+    Functions for password.
+    '''
     passwords =  r'(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}'
     potential_passwords = re.findall(passwords, text)
     found_passwords = []
@@ -56,6 +62,9 @@ def find_password(text):
     return found_passwords
 
 def find_key(text):
+    '''
+    Functions for key.
+    '''
     patterns = {
         'Stripe Secret Key': r'sk_live_[0-9a-zA-Z]{24}',
         'Stripe Publishable Key': r'pk_test_[0-9a-zA-Z]{24}',
@@ -74,6 +83,9 @@ def find_key(text):
 
 
 def find_secrets(text):
+    '''
+    2 role. Find secret keys and passwords.
+    '''
     secrets=[]
     secrets.extend(find_key(text))
     secrets.extend(find_password(text))
@@ -83,6 +95,9 @@ print(find_secrets(text))
 
 
 def decode_messages(text):
+    '''
+    4 role. Find and decipher hidden messages.
+    '''
     results = {'base64': [], 'hex': [], 'rot13': []}
     reg = r'[A-Za-z0-9+/]{10,}={0,2}'
     found_base64 = re.findall(reg, text)
@@ -124,7 +139,12 @@ def decode_messages(text):
 
 result = decode_messages(text)
 print(result)
-def analyze_logs_optimal(text):
+
+
+def analyze_logs(text):
+    '''
+    5 role. Analyze logs for example attacks.
+    '''
     results = {
         'sql_injections': [],
         'xss_attempts': [],
@@ -174,15 +194,14 @@ def analyze_logs_optimal(text):
                 results['failed_logins'].append(f"Строка {line_num}: {line}")
                 break
     return results
-results = analyze_logs_optimal(text)
-
+results = analyze_logs(text)
 print(results)
 
 
-
-
-
 def validate_phones(text):
+    '''
+    Functions for phones.
+    '''
     phone_patterns = [r'\+7[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}', # +7 XXX XXX XX XX
                         r'8[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}', # 8 XXX XXX XX XX
                         r'\d{3}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}', # XXX XXX XX XX
@@ -207,8 +226,10 @@ def validate_phones(text):
     return found_phones
 
 
-
 def luna_check(number):
+    '''
+    Luna algorithm.
+    '''
     total = 0
     reverse_card = number[::-1]
     for index in range(len(reverse_card)):
@@ -220,7 +241,11 @@ def luna_check(number):
         total += digit
     return total % 10 == 0
 
+
 def find_credit_cards(text):
+    '''
+    1 role. Functions for credit cards.
+    '''
     reg = r'[0-9]{4}[- ][0-9]{4}[- ][0-9]{4}[- ][0-9]{4}'
     reg1 = rf'(?=({reg}))'
     result = {'valid': [], 'invalid': []}
@@ -235,8 +260,10 @@ def find_credit_cards(text):
     return result
 
 
-
 def validate_dates(text):
+    '''
+    Functions for dates.
+    '''
     date_patterns =  [
         (r'\b(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.(\d{4})\b', "%d.%m.%Y"),
         (r'\b(\d{4})/(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])\b', "%Y/%m/%d"),
@@ -262,7 +289,11 @@ def validate_dates(text):
 
     return result
 
+
 def validate_inn(inn):
+    '''
+    Functions for inn.
+    '''
     if len(inn) == 10:
         coefficients = [2, 4, 10, 3, 5, 9, 4, 6, 8]
         checksum = sum(int(inn[i]) * coefficients[i] for i in range(9))
@@ -282,6 +313,9 @@ def validate_inn(inn):
 
 
 def find_inn(text):
+    '''
+    Functions for inn.
+    '''
     result = {'valid': [], 'invalid': []}
     reg_inn = r'\b\d{10}\b|\b\d{12}\b'
     found_inn = re.findall(reg_inn, text)
@@ -296,6 +330,9 @@ def find_inn(text):
 
 
 def normalize_and_validate(text):
+    '''
+    6 role. Normalize and validate data.
+    '''
     result = { 'phones': {'valid': [], 'invalid': []},'dates': {'valid': [], 'invalid': []},
                'inn': {'valid': [], 'invalid': []}, 'cards': {'valid': [], 'invalid': []} }
 
@@ -312,8 +349,6 @@ def normalize_and_validate(text):
     result['cards'].update(cards_data)
 
     return result
-
-
 print(normalize_and_validate(text))
 
 
