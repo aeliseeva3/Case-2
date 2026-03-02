@@ -349,7 +349,39 @@ def normalize_and_validate(text):
     result['cards'].update(cards_data)
 
     return result
-print(normalize_and_validate(text))
+
+
+def generate_comprehensive_report(text):
+    report = { 'financial_data': find_credit_cards(text),
+               'secrets': find_secrets(text),
+               'system_info': find_system_info(text),
+               'encoded_messages': decode_messages(text),
+               'security_threats': analyze_logs_optimal(text),
+               'normalized_data': normalize_and_validate(text)
+               }
+    return report
+
+
+def print_report(report):
+    print("=" * 50)
+    print("ОТЧЕТ ОПЕРАЦИИ 'DATA SHIELD'")
+    print("=" * 50)
+    sections = [ ("ФИНАНСОВЫЕ ДАННЫЕ", report['financial_data']),
+                 ("СЕКРЕТНЫЕ КЛЮЧИ", report['secrets']),
+                 ("СИСТЕМНАЯ ИНФОРМАЦИЯ", report['system_info']),
+                 ("РАСШИФРОВАННЫЕ СООБЩЕНИЯ", report['encoded_messages']),
+                 ("УГРОЗЫ БЕЗОПАСНОСТИ", report['security_threats']),
+                 ("НОРМАЛИЗОВАННЫЕ ДАННЫЕ", report['normalized_data']) ]
+    for title, data in sections:
+        print(f"\n{title}:")
+        print("-" * 30)
+
+
+if __name__ == "__main__":
+    with open('text.txt', 'r', encoding='utf-8') as f:
+        text = f.read()
+        report = generate_comprehensive_report(text)
+        print_report(report)
 
 
     
