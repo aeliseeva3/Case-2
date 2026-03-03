@@ -1,11 +1,10 @@
-from locale import windows_locale
-
-text = '4000 0012 3456 7899 fg5t 255.195.20.1 kcxjnjv 32.248.0.0   01/01/1849 07.11.2011 32.248.0.0  012.654.12.36 4000-0012-3456-7890-1111 192.168.1.1 10.0.0.255 dciuurti56_-iftd)012.654.12.36 4000-0012-3456-7890-1111 192.168.1.1 10.0.0.255 dciuurti56_-iftd) support@example.com info@company.org report.docx image.jpg C:\Windows\system32\drives\etc\hosts'
-
 from datetime import datetime
 import re
 import base64
 import codecs
+
+with open('text.txt', 'r', encoding='utf-8') as file:
+    text = file.read()
 
 
 def find_system_info(text):
@@ -100,45 +99,47 @@ def decode_messages(text):
     '''
     results = {'base64': [], 'hex': [], 'rot13': []}
     reg = r'[A-Za-z0-9+/]{10,}={0,2}'
-    found_base64 = re.findall(reg, text)
-    for encoded in found_base64:
+    for encoded in re.findall(reg, text):
         try:
-            decoded_bytes = base64.b64decode(encoded)
-            decoded_text = decoded_bytes.decode('utf-8')
-            results['base64'].append(decoded_text)
+            if '@' in encoded:
+                continue
+
+            decoded = base64.b64decode(encoded).decode('utf-8')
+
+            if (not decoded.startswith('{')
+                    and not decoded.startswith('[')
+                    and any(c.isalpha() for c in decoded)
+                    and len(decoded) > 4):
+                if decoded not in results['base64']:
+                    results['base64'].append(decoded)
         except:
             pass
-    reg_hex_1 = r'0x[A-Fa-f0-9]{2,}'
-    reg_hex_2 = r'(?:\\x[A-Fa-f0-9]{2})+'
-    found_hex_1 = re.findall(reg_hex_1, text)
-    found_hex_2 = re.findall(reg_hex_2, text)
-    found_hex = found_hex_1 + found_hex_2
-    for hex_str in found_hex:
+
+    reg_hex = r'0x[A-Fa-f0-9]{2,}|(?:\\x[A-Fa-f0-9]{2})+'
+    for hex_str in re.findall(reg_hex, text):
         try:
             if hex_str.startswith('0x'):
                 clean = hex_str[2:]
             else:
                 clean = hex_str.replace('\\x', '')
-            decoded_bytes = bytes.fromhex(clean)
-            decoded_text = decoded_bytes.decode('utf-8')
-            results['hex'].append(decoded_text)
+            decoded = bytes.fromhex(clean).decode('utf-8')
+
+            if len(decoded) >= 3 and decoded not in results['hex']:
+                results['hex'].append(decoded)
         except:
             pass
-    reg_rot = r'\b[A-Za-z]{4,}\b'
-    found_rot = re.findall(reg_rot, text)
-    for word in found_rot:
+
+    reg_rot = r'ROT13:\s*(.+)'
+    for phrase in re.findall(reg_rot, text):
         try:
-            decoded = codecs.encode(word, 'rot_13')
-            common_words = ['the', 'and', 'for', 'you', 'password', 'admin', 'user', 'secret', 'hello', 'world', 'this',
-                            'that', 'with', 'from', 'have']
-            if any(common in decoded.lower() for common in common_words):
-                results['rot13'].append(decoded)
+            decoded = codecs.encode(phrase, 'rot_13')
+            results['rot13'].append(decoded)
         except:
             pass
+
     return results
 
-result = decode_messages(text)
-print(result)
+print(decode_messages(text))
 
 
 def analyze_logs(text):
