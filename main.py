@@ -251,6 +251,7 @@ def find_credit_cards(text):
     reg1 = rf'(?=({reg}))'
     result = {'valid': [], 'invalid': []}
     credit_cards = re.findall(reg1, text)
+    credit_cards = list(set(credit_cards))
 
     for card in credit_cards:
         clean_card = re.sub(r'\D', '', card)
