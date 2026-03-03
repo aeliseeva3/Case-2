@@ -46,7 +46,7 @@ def find_system_info(text):
     return results
 
 results = find_system_info(text)
-print(results)
+
 
 
 def find_password(text):
@@ -91,7 +91,7 @@ def find_secrets(text):
     secrets.extend(find_password(text))
     return secrets
 
-print(find_secrets(text))
+
 
 
 def decode_messages(text):
@@ -140,7 +140,6 @@ def decode_messages(text):
 
     return results
 
-print(decode_messages(text))
 
 
 def analyze_logs(text):
@@ -197,7 +196,7 @@ def analyze_logs(text):
                 break
     return results
 results = analyze_logs(text)
-print(results)
+
 
 
 def validate_phones(text):
