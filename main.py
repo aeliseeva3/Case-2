@@ -61,7 +61,8 @@ def find_password(text):
     )
     potential_passwords = re.findall(passwords, text)
     found_passwords = []
-    common_words = {'password', 'access_token', 'api_key', 'cnffjbeq', 'javascript', '0xGHIJKL'}
+    common_words = {'password', 'access_token', 'api_key',
+                    'cnffjbeq', 'javascript', '0xGHIJKL'}
 
     for password in potential_passwords:
         if password.lower() not in common_words and len(password) >= 8:
@@ -435,10 +436,10 @@ def universal_save(report, filename="result3.txt"):
         
     all_data = extract(report)
 
-    
     with open("result3.txt", 'w', encoding='utf-8') as f:
         for line in all_data:
             f.write(f"{line}\n")
+
 
 if __name__ == "__main__":
     with open('text.txt', 'r', encoding='utf-8') as f:
