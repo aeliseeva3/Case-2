@@ -20,7 +20,7 @@ def find_system_info(text):
     ip_pattern = rf'\b{num}\.{num}\.{num}\.{num}\b'
     ips = re.findall(ip_pattern, text)
     ips = ['.'.join(ip) for ip in ips] 
-    results["ips"] = ips
+    results["ips"] = list(set(results["ips"]))
 
     extensions = ['txt', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'png', 'gif',
               'exe', 'msi', 'ini', 'cfg', 'conf', 'log', 'tmp', 'temp',
@@ -37,11 +37,11 @@ def find_system_info(text):
         pattern = rf'\b\S+\.{ext}\b'
         matches = re.findall(pattern, text)
         files_found.extend(matches)
-    results["files"] = files_found
+    results["files"] = list(set(results["files"]))
 
     email_pattern = r'\b\S+@\S+\.\S+\b'
     emails = re.findall(email_pattern, text)
-    results["emails"] = emails
+    results["emails"] = list(set(results["emails"]))
 
     return results
 
