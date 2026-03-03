@@ -29,7 +29,7 @@ def find_system_info(text):
 
     files_found = []
 
-    windows_pattern = r'[A-Za-z]:\\(?:[^\\\n]+\\)*[^\\\n]+'
+    windows_pattern = r'[A-Za-z]:\\(?:[^\\\s]+\\)*[^\\\s]+'
     windows_matches = re.findall(windows_pattern, text)
     files_found.extend(windows_matches)
 
