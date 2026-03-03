@@ -380,13 +380,6 @@ def print_report(report):
         print(data)
 
 
-if __name__ == "__main__":
-    with open('text.txt', 'r', encoding='utf-8') as f:
-        text = f.read()
-        report = generate_comprehensive_report(text)
-        print_report(report)
-
-
 def universal_save(report, filename="result3.txt"):
     def extract(obj):
         items = []
@@ -410,5 +403,12 @@ def universal_save(report, filename="result3.txt"):
     with open("result3.txt", 'w', encoding='utf-8') as f:
         for line in all_data:
             f.write(f"{line}\n")
+
+if __name__ == "__main__":
+    with open('text.txt', 'r', encoding='utf-8') as f:
+        text = f.read()
+        report = generate_comprehensive_report(text)
+        print_report(report)
+        universal_save(report)
 
     
