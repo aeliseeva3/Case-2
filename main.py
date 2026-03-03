@@ -67,7 +67,9 @@ def find_password(text):
 
     for password in potential_passwords:
         found_passwords.append(password)
+        
     return found_passwords
+    
 
 def find_key(text):
     '''
@@ -94,10 +96,10 @@ def find_secrets(text):
     '''
     2 role. Find secret keys and passwords.
     '''
-    secrets=[]
+    secrets = []
     secrets.extend(find_key(text))
     secrets.extend(find_password(text))
-    
+
     return secrets
 
 
@@ -202,7 +204,7 @@ def analyze_logs(text):
             if pattern in line_lower:
                 results['failed_logins'].append(line)
                 break
-    
+
     return results
 
 
@@ -278,7 +280,9 @@ def validate_dates(text):
     Functions for dates.
     '''
     date_patterns = [
-        (r'\b(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.(\d{4})\b', "%d.%m.%Y"),
+        (
+            r'\b(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.(\d{4})\b', "%d.%m.%Y"
+        ),
         (r'\b(\d{4})/(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])\b', "%Y/%m/%d"),
         (r'\b(0[1-9]|[12][0-9]|3[01])-(Jan|Feb|Mar|Apr|May|Jun|'
          r'Jul|Aug|Sep|Oct|Nov|Dec)-(\d{4})\b', "%d-%b-%Y")
@@ -391,7 +395,7 @@ def generate_comprehensive_report(text):
               'encoded_messages': decode_messages(text),
               'security_threats': analyze_logs(text),
               'normalized_data': normalize_and_validate(text)
-    }
+             }
     
     return report
 
@@ -435,6 +439,7 @@ def universal_save(report, filename="result3.txt"):
         return items
         
     all_data = extract(report)
+
     
     with open("result3.txt", 'w', encoding='utf-8') as f:
         for line in all_data:
