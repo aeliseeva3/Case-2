@@ -377,6 +377,7 @@ def print_report(report):
     for title, data in sections:
         print(f"\n{title}:")
         print("-" * 30)
+        print(data)
 
 
 if __name__ == "__main__":
