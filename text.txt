@@ -20,7 +20,7 @@ pk_test_8h7g6f5d4s3a2q1w2e3r4t5y6
 api_key=AbCdEfGhIjKlMnOpQrStUvWxYz123456
 access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
 password=MyStrongP@ssw0rd123! пароль: Summer2024!
-sk_live_short pk_test_123 api_key=weak
+sk_live_short25 pk_test_123 api_key=weak
 password=123 token=abc
 
 4532-4512-8795-2109 4111-1111-1111-1111
@@ -34,7 +34,7 @@ QmFzZTY0IGRlY29kZWQ= Это не Base64
 
 0x48656C6C6F 0x576F726C64 0x507974686F6E
 \x48\x65\x6C\x6C\x6F \x50\x79\x74\x68\x6F\x6E
-0xGHIJKL \x48\x65\x Gur cnffjbeq vf Summer2024!
+\x48\x65\x Gur cnffjbeq vf Summer2024!
 Uryyb Jbeyq Fraq hf gur pbqr Обычный текст
 12345
 
@@ -81,3 +81,4 @@ Base64: VGhpcyBpcyBhIHNlY3JldCBtZXNzYWdlIQ==
 Hex: 0x4D7950617373
 Hex: \x48\x65\x6C\x6C\x6F
 ROT13: Gur cnffjbeq vf Fhzzre2026!
+
