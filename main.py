@@ -173,27 +173,27 @@ def analyze_logs(text):
     failed_patterns = ['401', '403', 'failed login', 'invalid password', 'access denied']
 
     lines = text.split('\n')
-    for line_num, line in enumerate(lines, 1):
+    for line in lines:
         line_lower = line.lower()
 
         for pattern in sql_patterns:
             if pattern.lower() in line_lower:
-                results['sql_injections'].append(f"Строка {line_num}: {line}")
+                results['sql_injections'].append(line)
                 break
 
         for pattern in xss_patterns:
             if pattern.lower() in line_lower:
-                results['xss_attempts'].append(f"Строка {line_num}: {line}")
+                results['xss_attempts'].append(line)
                 break
 
         for agent in suspicious_agents:
             if agent in line_lower:
-                results['suspicious_user_agents'].append(f"Строка {line_num}: {line}")
+                results['suspicious_user_agents'].append(line)
                 break
 
         for pattern in failed_patterns:
             if pattern in line_lower:
-                results['failed_logins'].append(f"Строка {line_num}: {line}")
+                results['failed_logins'].append(line)
                 break
     return results
 results = analyze_logs(text)
