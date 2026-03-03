@@ -39,7 +39,7 @@ def find_system_info(text):
         files_found.extend(matches)
     results["files"] = list(set(files_found))
 
-    email_pattern = r'\b[a-zA-Z0-9][a-zA-Z0-9._%+-]*@[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,}\b
+    email_pattern = r'\b[a-zA-Z0-9][a-zA-Z0-9._%+-]*@[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,}\b'
     emails = re.findall(email_pattern, text)
     results["emails"] = list(set(emails))
 
