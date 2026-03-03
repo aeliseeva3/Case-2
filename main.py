@@ -17,8 +17,9 @@ def find_system_info(text):
         "emails": []
     }
     num = r'(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])'
-    ip_pattern = rf'(?=({num}\.{num}\.{num}\.{num}))'
-    ips = [x.group(1) for x in re.finditer(ip_pattern, text)]
+    ip_pattern = rf'\b{num}\.{num}\.{num}\.{num}\b'
+    ips = re.findall(ip_pattern, text)
+    ips = ['.'.join(ip) for ip in ips] 
     results["ips"] = ips
 
     extensions = ['txt', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'png', 'gif',
