@@ -51,9 +51,6 @@ def find_system_info(text):
     return results
 
 
-results = find_system_info(text)
-
-
 def find_password(text):
     '''
     Functions for password.
@@ -64,10 +61,11 @@ def find_password(text):
     )
     potential_passwords = re.findall(passwords, text)
     found_passwords = []
+    common_words = {'password', 'access_token', 'api_key', 'cnffjbeq', 'javascript', '0xGHIJKL'}
 
     for password in potential_passwords:
-        found_passwords.append(password)
-        
+        if password.lower() not in common_words and len(password) >= 8:
+            found_passwords.append(password)
     return found_passwords
     
 
@@ -206,9 +204,6 @@ def analyze_logs(text):
                 break
 
     return results
-
-
-results = analyze_logs(text)
 
 
 def validate_phones(text):
