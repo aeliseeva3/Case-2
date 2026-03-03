@@ -19,13 +19,15 @@ def find_system_info(text):
     num = r'(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9][0-9]|[0-9])'
     ip_pattern = rf'\b{num}\.{num}\.{num}\.{num}\b'
     ips = re.findall(ip_pattern, text)
-    ips = ['.'.join(ip) for ip in ips] 
+    ips = ['.'.join(ip) for ip in ips]
     results["ips"] = list(set(ips))
 
-    extensions = ['txt', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'png', 'gif',
-              'exe', 'msi', 'ini', 'cfg', 'conf', 'log', 'tmp', 'temp',
-              'zip', 'rar', '7z', 'tar', 'gz', 'py', 'js', 'html', 'css',
-              'dll', 'sys', 'drv', 'bat', 'cmd', 'ps1', 'vbs']
+    extensions = [
+        'txt', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'jpg', 'png', 'gif',
+        'exe', 'msi', 'ini', 'cfg', 'conf', 'log', 'tmp', 'temp',
+        'zip', 'rar', '7z', 'tar', 'gz', 'py', 'js', 'html', 'css',
+        'dll', 'sys', 'drv', 'bat', 'cmd', 'ps1', 'vbs'
+    ]
 
     files_found = []
 
@@ -39,21 +41,27 @@ def find_system_info(text):
         files_found.extend(matches)
     results["files"] = list(set(files_found))
 
-    email_pattern = r'\b[a-zA-Z0-9][a-zA-Z0-9._%+-]*@[a-zA-Z0-9]+(?:\.[a-zA-Z0-9]+)*\.[a-zA-Z]{2,}\b'
+    email_pattern = (
+        r'\b[a-zA-Z0-9][a-zA-Z0-9._%+-]*@[a-zA-Z0-9]+'
+        r'(?:\.[a-zA-Z0-9]+)*\.[a-zA-Z]{2,}\b'
+    )
     emails = re.findall(email_pattern, text)
     results["emails"] = list(set(emails))
 
     return results
 
-results = find_system_info(text)
 
+results = find_system_info(text)
 
 
 def find_password(text):
     '''
     Functions for password.
     '''
-    passwords =  r'(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,}'
+    passwords = (
+        r'(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+])'
+        r'[A-Za-z\d!@#$%^&*()_+]{8,}'
+    )
     potential_passwords = re.findall(passwords, text)
     found_passwords = []
 
@@ -89,9 +97,8 @@ def find_secrets(text):
     secrets=[]
     secrets.extend(find_key(text))
     secrets.extend(find_password(text))
+    
     return secrets
-
-
 
 
 def decode_messages(text):
@@ -141,7 +148,6 @@ def decode_messages(text):
     return results
 
 
-
 def analyze_logs(text):
     '''
     5 role. Analyze logs for example attacks.
@@ -169,7 +175,9 @@ def analyze_logs(text):
         'curl', 'wget', 'python-requests', 'go-http-client'
     ]
 
-    failed_patterns = ['401', '403', 'failed login', 'invalid password', 'access denied']
+    failed_patterns = [
+        '401', '403', 'failed login', 'invalid password', 'access denied'
+    ]
 
     lines = text.split('\n')
     for line in lines:
@@ -194,18 +202,21 @@ def analyze_logs(text):
             if pattern in line_lower:
                 results['failed_logins'].append(line)
                 break
+    
     return results
-results = analyze_logs(text)
 
+
+results = analyze_logs(text)
 
 
 def validate_phones(text):
     '''
     Functions for phones.
     '''
-    phone_patterns = [r'\+7[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}', # +7 XXX XXX XX XX
-                        r'8[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}', # 8 XXX XXX XX XX
-                        r'\d{3}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}', # XXX XXX XX XX
+    phone_patterns = [
+        r'\+7[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}',  # +7 XXX XXX XX XX
+        r'8[\s-]?\d{3}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}',  # 8 XXX XXX XX XX
+        r'\d{3}[\s-]?\d{3}[\s-]?\d{2}[\s-]?\d{2}',  # XXX XXX XX XX
     ]
     found_phones = {'valid': [], 'invalid': []}
 
@@ -266,10 +277,11 @@ def validate_dates(text):
     '''
     Functions for dates.
     '''
-    date_patterns =  [
+    date_patterns = [
         (r'\b(0[1-9]|[12][0-9]|3[01])\.(0[1-9]|1[0-2])\.(\d{4})\b', "%d.%m.%Y"),
         (r'\b(\d{4})/(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])\b', "%Y/%m/%d"),
-        (r'\b(0[1-9]|[12][0-9]|3[01])-(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)-(\d{4})\b', "%d-%b-%Y")
+        (r'\b(0[1-9]|[12][0-9]|3[01])-(Jan|Feb|Mar|Apr|May|Jun|'
+         r'Jul|Aug|Sep|Oct|Nov|Dec)-(\d{4})\b', "%d-%b-%Y")
     ]
     result = {'valid': [], 'invalid': []}
 
@@ -335,8 +347,10 @@ def normalize_and_validate(text):
     '''
     6 role. Normalize and validate data.
     '''
-    result = { 'phones': {'valid': [], 'invalid': []},'dates': {'valid': [], 'invalid': []},
-               'inn': {'valid': [], 'invalid': []}, 'cards': {'valid': [], 'invalid': []} }
+    result = {'phones': {'valid': [], 'invalid': []},
+              'dates': {'valid': [], 'invalid': []},
+              'inn': {'valid': [], 'invalid': []},
+              'cards': {'valid': [], 'invalid': []}}
 
     phones_data = validate_phones(text)
     result['phones'].update(phones_data)
@@ -350,14 +364,18 @@ def normalize_and_validate(text):
     cards_data = find_credit_cards(text)
     normalized_valid = []
     for card in cards_data['valid']:
-        clean = re.sub(r'\D', '', card)  # удаляем все не-цифры
-        formatted = '-'.join([clean[0:4], clean[4:8], clean[8:12], clean[12:16]])
+        clean = re.sub(r'\D', '', card)
+        formatted = '-'.join([
+            clean[0:4], clean[4:8], clean[8:12], clean[12:16]
+        ])
         normalized_valid.append(formatted)
         
     normalized_invalid = []
     for card in cards_data['invalid']:
-        clean = re.sub(r'\D', '', card)  # удаляем все не-цифры
-        formatted = '-'.join([clean[0:4], clean[4:8], clean[8:12], clean[12:16]])
+        clean = re.sub(r'\D', '', card)
+        formatted = '-'.join([
+            clean[0:4], clean[4:8], clean[8:12], clean[12:16]
+        ])
         normalized_invalid.append(formatted)
     
     result['cards']['valid'] = normalized_valid
@@ -367,13 +385,14 @@ def normalize_and_validate(text):
 
 
 def generate_comprehensive_report(text):
-    report = { 'financial_data': find_credit_cards(text),
-               'secrets': find_secrets(text),
-               'system_info': find_system_info(text),
-               'encoded_messages': decode_messages(text),
-               'security_threats': analyze_logs(text),
-               'normalized_data': normalize_and_validate(text)
-               }
+    report = {'financial_data': find_credit_cards(text),
+              'secrets': find_secrets(text),
+              'system_info': find_system_info(text),
+              'encoded_messages': decode_messages(text),
+              'security_threats': analyze_logs(text),
+              'normalized_data': normalize_and_validate(text)
+    }
+    
     return report
 
 
@@ -381,12 +400,12 @@ def print_report(report):
     print("=" * 50)
     print("ОТЧЕТ ОПЕРАЦИИ 'DATA SHIELD'")
     print("=" * 50)
-    sections = [ ("ФИНАНСОВЫЕ ДАННЫЕ", report['financial_data']),
-                 ("СЕКРЕТНЫЕ КЛЮЧИ", report['secrets']),
-                 ("СИСТЕМНАЯ ИНФОРМАЦИЯ", report['system_info']),
-                 ("РАСШИФРОВАННЫЕ СООБЩЕНИЯ", report['encoded_messages']),
-                 ("УГРОЗЫ БЕЗОПАСНОСТИ", report['security_threats']),
-                 ("НОРМАЛИЗОВАННЫЕ ДАННЫЕ", report['normalized_data']) ]
+    sections = [("ФИНАНСОВЫЕ ДАННЫЕ", report['financial_data']),
+                ("СЕКРЕТНЫЕ КЛЮЧИ", report['secrets']),
+                ("СИСТЕМНАЯ ИНФОРМАЦИЯ", report['system_info']),
+                ("РАСШИФРОВАННЫЕ СООБЩЕНИЯ", report['encoded_messages']),
+                ("УГРОЗЫ БЕЗОПАСНОСТИ", report['security_threats']),
+                ("НОРМАЛИЗОВАННЫЕ ДАННЫЕ", report['normalized_data'])]
     for title, data in sections:
         print(f"\n{title}:")
         print("-" * 30)
@@ -394,6 +413,7 @@ def print_report(report):
 
 
 def universal_save(report, filename="result3.txt"):
+    
     def extract(obj):
         items = []
         if isinstance(obj, dict):
@@ -407,12 +427,15 @@ def universal_save(report, filename="result3.txt"):
                     items.extend(extract(i))
                 else:
                     val = str(i).strip()
-                    if val and val.lower() not in ['phones', 'dates', 'inn', 'cards']:
+                    if val and val.lower() not in [
+                        'phones', 'dates', 'inn', 'cards'
+                    ]:
                         items.append(val)
+                        
         return items
-
+        
     all_data = extract(report)
-
+    
     with open("result3.txt", 'w', encoding='utf-8') as f:
         for line in all_data:
             f.write(f"{line}\n")
