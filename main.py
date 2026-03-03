@@ -348,7 +348,20 @@ def normalize_and_validate(text):
     result['inn'].update(inn_data)
 
     cards_data = find_credit_cards(text)
-    result['cards'].update(cards_data)
+    normalized_valid = []
+    for card in cards_data['valid']:
+        clean = re.sub(r'\D', '', card)  # удаляем все не-цифры
+        formatted = '-'.join([clean[0:4], clean[4:8], clean[8:12], clean[12:16]])
+        normalized_valid.append(formatted)
+        
+    normalized_invalid = []
+    for card in cards_data['invalid']:
+        clean = re.sub(r'\D', '', card)  # удаляем все не-цифры
+        formatted = '-'.join([clean[0:4], clean[4:8], clean[8:12], clean[12:16]])
+        normalized_invalid.append(formatted)
+    
+    result['cards']['valid'] = normalized_valid
+    result['cards']['invalid'] = normalized_invalid
 
     return result
 
