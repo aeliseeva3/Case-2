@@ -357,7 +357,7 @@ def generate_comprehensive_report(text):
                'secrets': find_secrets(text),
                'system_info': find_system_info(text),
                'encoded_messages': decode_messages(text),
-               'security_threats': analyze_logs_optimal(text),
+               'security_threats': analyze_logs(text),
                'normalized_data': normalize_and_validate(text)
                }
     return report
