@@ -308,6 +308,8 @@ def validate_inn(inn):
     '''
     Functions for inn.
     '''
+    if all(number == '0' for number in inn):
+    	return False
     if len(inn) == 10:
         coefficients = [2, 4, 10, 3, 5, 9, 4, 6, 8]
         checksum = sum(int(inn[i]) * coefficients[i] for i in range(9))
