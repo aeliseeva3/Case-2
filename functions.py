@@ -21,7 +21,6 @@ def compare_results(my_num, num_groups=3):
         if missing:
             print(f"{artifact} - отсутствует у групп {', '.join(missing)}")
     
-    
     print("\nАртефакты, которые есть у других, но нет у меня:")
     print("-" * 50)
     for group_num, group_set in other_data.items():
