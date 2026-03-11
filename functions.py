@@ -1,4 +1,4 @@
-def compare_results(my_num, num_groups=3):
+def compare_results(my_num, num_groups=12):
     my_file = f'result{my_num}.txt'
     with open(my_file, 'r', encoding='utf-8') as f:
         my_data = set([line.strip() for line in f])
@@ -28,4 +28,4 @@ def compare_results(my_num, num_groups=3):
             if artifact not in my_data:
                 print(f"{artifact} - есть в группе {group_num}, но нет у меня")
 
-compare_results(my_num=3, num_groups=3)
+compare_results(my_num=3, num_groups=12)
